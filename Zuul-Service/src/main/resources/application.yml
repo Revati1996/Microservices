@@ -1,0 +1,54 @@
+server:
+  port: 8888
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: http://localhost:8761/eureka/
+      
+spring:
+  application:
+    name: Gateway-Service
+  cloud:
+    gateway:
+      discovery.locator:
+        enabled: true
+        lowerCaseServiceId: true
+      routes:
+        - id: Notification-Service
+          uri: lb://Notification-Service
+          predicates:
+            - Path=/notification-api/**
+          filters:
+            - RewritePath=/notification-api/(?<path>.*),/$\{path}          
+        - id: Account-Service
+          uri: lb://Account-Service
+          predicates:
+            - Path=/accounts-api/**
+          filters:
+            - RewritePath=/accounts-api/(?<path>.*),/$\{path}          
+        - id: Customer-Service
+          uri: lb://Customer-Service
+          predicates:
+            - Path=/customer-api/**
+          filters:
+            - RewritePath=/customer-api/(?<path>.*),/$\{path}       
+        - id: Auth-Service
+          uri: lb://Auth-Service
+          predicates:
+            - Path=/auth-api/**
+          filters:
+            - RewritePath=/auth-api/(?<path>.*),/$\{path}        
+     
+         
